@@ -7,6 +7,6 @@
     <declare-styleable name="AutoCompletePopover">
         <attr name="view" format="reference" />
         <attr name="row" format="reference" />
-        <attr name="color" format="reference" />
+        <attr name="color" format="color" />
     </declare-styleable>
 </resources>

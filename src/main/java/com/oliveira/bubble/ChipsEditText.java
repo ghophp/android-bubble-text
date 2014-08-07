@@ -419,7 +419,7 @@ public class ChipsEditText extends MultilineEditText {
                 if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED)
                     actionId = EditorInfo.IME_ACTION_DONE;
                 if (actionId == EditorInfo.IME_ACTION_DONE && manualModeOn) {
-                    endManualMode();
+                    cancelManualMode();
                     onActionDone();
                     return true;
                 } else if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -566,23 +566,27 @@ public class ChipsEditText extends MultilineEditText {
     private ArrayList<Listener> listeners = new ArrayList<Listener>();
 
     protected void onBubbleCountChanged() {
-        for (Listener listener : listeners)
+        for (Listener listener : listeners) {
             listener.onBubbleCountChanged();
+        }
     }
 
     protected void onActionDone() {
-        for (Listener listener : listeners)
+        for (Listener listener : listeners) {
             listener.onActionDone();
+        }
     }
 
     protected void onBubbleSelected(int position) {
-        for (Listener listener : listeners)
+        for (Listener listener : listeners) {
             listener.onBubbleSelected(position);
+        }
     }
 
     protected void onXPressed() {
-        for (Listener listener : listeners)
+        for (Listener listener : listeners) {
             listener.onXPressed();
+        }
     }
 
     public void addListener(Listener listener) {

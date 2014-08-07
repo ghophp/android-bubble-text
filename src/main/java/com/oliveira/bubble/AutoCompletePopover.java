@@ -65,7 +65,7 @@ public class AutoCompletePopover extends RelativeLayout {
                 R.styleable.AutoCompletePopover_row,
                 R.layout.autocomplete_row);
 
-        bgColor = styledAttributes.getResourceId(
+        bgColor = styledAttributes.getColor(
                 R.styleable.AutoCompletePopover_color,
                 android.R.color.darker_gray);
 
@@ -107,7 +107,7 @@ public class AutoCompletePopover extends RelativeLayout {
 
         bgPaint = new Paint();
         bgPaint.setAntiAlias(true);
-        bgPaint.setColor(getResources().getColor(bgColor));
+        bgPaint.setColor(bgColor);
         bgPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
