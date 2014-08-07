@@ -102,7 +102,6 @@ public class AutoCompletePopover extends RelativeLayout {
         };
 
         findViewById(R.id.x_border).setOnClickListener(x);
-
         imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         bgPaint = new Paint();
@@ -115,7 +114,7 @@ public class AutoCompletePopover extends RelativeLayout {
         this.et = et;
     }
 
-    public void setItems(ArrayList<String> items) {
+    public void setItems(ArrayList<Entity> items) {
         adapter.setItems(items);
     }
 
@@ -174,7 +173,7 @@ public class AutoCompletePopover extends RelativeLayout {
 
     public static class Adapter extends BaseAdapter {
 
-        private ArrayList<String> items = new ArrayList<String>();
+        private ArrayList<Entity> items = new ArrayList<Entity>();
         private LayoutInflater li;
         private ViewGroup vg;
         private int rowId;
@@ -184,10 +183,10 @@ public class AutoCompletePopover extends RelativeLayout {
             this.rowId = rowId;
         }
 
-        public void setItems(ArrayList<String> items) {
+        public void setItems(ArrayList<Entity> items) {
 
             if (items == null) {
-                items = new ArrayList<String>();
+                items = new ArrayList<Entity>();
             }
 
             this.items = items;
@@ -215,8 +214,9 @@ public class AutoCompletePopover extends RelativeLayout {
                 h = (ViewHolder)c.getTag();
             }
 
-            String text = items.get(position);
-            h.title.setText(text);
+            h.title.setText(items.get(position).label);
+            h.title.setTag(items.get(position).data);
+
             h.title.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -251,7 +251,7 @@ public class AutoCompletePopover extends RelativeLayout {
             et.manualModeOn = false;
             et.muteHashWatcher(true);
 
-            String textToAdd = adapter.items.get(position);
+            String textToAdd = adapter.items.get(position).label;
             if (et.lastEditAction != null) {
                 try {
                     Editable t = et.getText();
@@ -263,7 +263,7 @@ public class AutoCompletePopover extends RelativeLayout {
                 }
             }
 
-            et.addBubble(textToAdd, et.manualStart);
+            et.addBubble(textToAdd, et.manualStart, adapter.items.get(position).data);
             if (et.getSelectionEnd() == et.length() || et.getSelectionEnd() + 1 == et.length()) {
                 et.append(" ");
                 imm.restartInput(et);
@@ -320,5 +320,10 @@ public class AutoCompletePopover extends RelativeLayout {
 
         canvas.drawPath(path, bgPaint);
         super.dispatchDraw(canvas);
+    }
+
+    public static class Entity {
+        public String label;
+        public Object data;
     }
 }

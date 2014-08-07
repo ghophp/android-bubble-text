@@ -24,11 +24,11 @@ public class AutoCompleteManager {
     }
 
     public interface Resolver {
-        public ArrayList<String> getSuggestions(String query) throws Exception;
+        public ArrayList<AutoCompletePopover.Entity> getSuggestions(String query) throws Exception;
 
-        public ArrayList<String> getDefaultSuggestions();
+        public ArrayList<AutoCompletePopover.Entity> getDefaultSuggestions();
 
-        public void update(String query, ArrayList<String> results);
+        public void update(String query, ArrayList<AutoCompletePopover.Entity> results);
     }
 
     public void search(String query) {
@@ -48,7 +48,9 @@ public class AutoCompleteManager {
     }
 
     private AtomicInteger searchVenueTaskCount = new AtomicInteger(0);
-    private HashMap<String, ArrayList<String>> queriesSoFar = new HashMap<String, ArrayList<String>>();
+
+    private HashMap<String, ArrayList<AutoCompletePopover.Entity>> queriesSoFar =
+            new HashMap<String, ArrayList<AutoCompletePopover.Entity>>();
 
     private class SearchTask {
 
@@ -63,9 +65,9 @@ public class AutoCompleteManager {
             searchVenueTaskCount.incrementAndGet();
         }
 
-        protected ArrayList<String> doInBackground() {
+        protected ArrayList<AutoCompletePopover.Entity> doInBackground() {
             try {
-                ArrayList<String> results = resolver.getSuggestions(query);
+                ArrayList<AutoCompletePopover.Entity> results = resolver.getSuggestions(query);
                 if (results != null && !TextUtils.isEmpty(query))
                     queriesSoFar.put(query, results);
                 return results;
@@ -79,7 +81,7 @@ public class AutoCompleteManager {
             decrement();
         }
 
-        protected void onPostExecute(ArrayList<String> results) {
+        protected void onPostExecute(ArrayList<AutoCompletePopover.Entity> results) {
             if (resolver != null && results != null && (latestQuery.startsWith(query) || latestQuery.equals(query))) {
                 resolver.update(query, results);
             }
@@ -92,7 +94,7 @@ public class AutoCompleteManager {
                 @Override
                 public void run() {
                     try {
-                        final ArrayList<String> results = doInBackground();
+                        final ArrayList<AutoCompletePopover.Entity> results = doInBackground();
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -120,7 +122,7 @@ public class AutoCompleteManager {
             }
 
             boolean alreadyQueriedSomethingSimilar = false;
-            for (java.util.Map.Entry<String, ArrayList<String>> e : queriesSoFar.entrySet()) {
+            for (java.util.Map.Entry<String, ArrayList<AutoCompletePopover.Entity>> e : queriesSoFar.entrySet()) {
                 if (tryToBeSmart && query.startsWith(e.getKey()) && e.getValue().size() == 0) {
                     alreadyQueriedSomethingSimilar = true;
                     break;

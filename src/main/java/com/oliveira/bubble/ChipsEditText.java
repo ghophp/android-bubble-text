@@ -16,8 +16,12 @@ import java.util.ArrayList;
 @SuppressWarnings("unused")
 public class ChipsEditText extends MultilineEditText {
 
-    private ArrayList<String> availableItems = new ArrayList<String>();
-    private ArrayList<String> filteredItems = new ArrayList<String>();
+    private ArrayList<AutoCompletePopover.Entity> availableItems =
+            new ArrayList<AutoCompletePopover.Entity>();
+
+    private ArrayList<AutoCompletePopover.Entity> filteredItems =
+            new ArrayList<AutoCompletePopover.Entity>();
+
     private AutoCompletePopover popover;
     private AutoCompleteManager manager;
     private BubbleStyle currentStyle;
@@ -48,20 +52,21 @@ public class ChipsEditText extends MultilineEditText {
 
         manager = new AutoCompleteManager();
         manager.setResolver(new AutoCompleteManager.Resolver() {
+
             @Override
-            public ArrayList<String> getSuggestions(String query) throws Exception {
+            public ArrayList<AutoCompletePopover.Entity> getSuggestions(String query) throws Exception {
                 if (resolver == null)
                     return null;
                 return resolver.getSuggestions(query);
             }
 
             @Override
-            public ArrayList<String> getDefaultSuggestions() {
+            public ArrayList<AutoCompletePopover.Entity> getDefaultSuggestions() {
                 return resolver.getDefaultSuggestions();
             }
 
             @Override
-            public void update(String query, ArrayList<String> results) {
+            public void update(String query, ArrayList<AutoCompletePopover.Entity> results) {
                 setAvailableItems(results);
             }
         });
@@ -154,18 +159,20 @@ public class ChipsEditText extends MultilineEditText {
         this.popover = popover;
     }
 
-    public void addBubble(String text, int start) {
+    public void addBubble(String text, int start, Object data) {
+
         if (start > getText().length()) {
             start = getText().length();
         }
+
         getText().insert(start, text);
-        makeChip(start, start+text.length(), true);
+        makeChip(start, start+text.length(), true, data);
         onBubbleCountChanged();
     }
 
     boolean finalizing;
 
-    public void makeChip(int start, int end, boolean finalize) {
+    public void makeChip(int start, int end, boolean finalize, Object data) {
 
         if (finalizing) {
             return;
@@ -203,7 +210,7 @@ public class ChipsEditText extends MultilineEditText {
                 maxWidth,
                 bubbleStyle,
                 this,
-                null);
+                data);
 
         finalizing = false;
     }
@@ -225,6 +232,10 @@ public class ChipsEditText extends MultilineEditText {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    public BubbleSpanImpl[] getBubbleList() {
+        return getText().getSpans(0, getText().length(), BubbleSpanImpl.class);
     }
 
     public void startManualMode() {
@@ -252,7 +263,7 @@ public class ChipsEditText extends MultilineEditText {
 
         boolean madeChip = false;
         if (manualStart < getSelectionEnd() && manualModeOn) {
-            makeChip(manualStart, getSelectionEnd(), true);
+            makeChip(manualStart, getSelectionEnd(), true, null);
             madeChip = true;
             onBubbleCountChanged();
         }
@@ -326,7 +337,7 @@ public class ChipsEditText extends MultilineEditText {
                 if (end < manualStart) {
                     manualModeOn = false;
                 } else {
-                    makeChip(manualStart, end, false);
+                    makeChip(manualStart, end, false, null);
                 }
 
             } else if (manipulatedSpan != null) {
@@ -351,29 +362,52 @@ public class ChipsEditText extends MultilineEditText {
         }
     };
 
-    protected void setAvailableItems(ArrayList<String> items) {
+    protected void setAvailableItems(ArrayList<AutoCompletePopover.Entity> items) {
         popover.scrollToTop();
         availableItems = items;
         filter();
     }
 
+    private void removeByText(String text) {
+
+        AutoCompletePopover.Entity toRemove = null;
+        for (AutoCompletePopover.Entity item : availableItems) {
+            if (text.equals(item.label)) {
+                toRemove = item;
+                break;
+            }
+        }
+
+        if (toRemove != null) {
+            availableItems.remove(toRemove);
+        }
+    }
+
     private void filter() {
 
-        ArrayList<String> availableItems = new ArrayList<String>();
+        ArrayList<AutoCompletePopover.Entity> availableItems =
+                new ArrayList<AutoCompletePopover.Entity>();
+
         if (this.availableItems != null) {
-            for (String item : this.availableItems)
-                availableItems.add(item.trim());
+            for (AutoCompletePopover.Entity item : this.availableItems) {
+                item.label = item.label.trim();
+                availableItems.add(item);
+            }
         }
 
         if (availableItems.size() > 0) {
             BubbleSpan[] spans = getText().getSpans(0, getText().length(), BubbleSpan.class);
             for (BubbleSpan span : spans) {
+
                 int start = getText().getSpanStart(span);
                 int end = getText().getSpanEnd(span);
-                if (start == -1 || end == -1 || end <= start || (manualStart == start && manualModeOn))
+
+                if (start == -1 || end == -1 || end <= start || (manualStart == start && manualModeOn)) {
                     continue;
+                }
+
                 String text = getText().subSequence(start, end).toString().trim();
-                availableItems.remove(text);
+                removeByText(text);
             }
         }
 
@@ -381,9 +415,9 @@ public class ChipsEditText extends MultilineEditText {
         if (lastEditAction != null) {
             String text = lastEditAction.text.toLowerCase();
             if (!TextUtils.isEmpty(text))
-                for (String item : availableItems) {
-                    if ((text.length() > 1 && item.toLowerCase().startsWith(text))
-                            || (manualModeOn && item.toLowerCase().contains(text) && text.length() > 3)) {
+                for (AutoCompletePopover.Entity item : availableItems) {
+                    if ((text.length() > 1 && item.label.toLowerCase().startsWith(text))
+                            || (manualModeOn && item.label.toLowerCase().contains(text) && text.length() > 3)) {
                         filteredItems.add(item);
                     }
                 }
@@ -490,8 +524,8 @@ public class ChipsEditText extends MultilineEditText {
     private AutocompleteResolver resolver;
 
     public interface AutocompleteResolver {
-        public ArrayList<String> getSuggestions(String query) throws Exception;
-        public ArrayList<String> getDefaultSuggestions();
+        public ArrayList<AutoCompletePopover.Entity> getSuggestions(String query) throws Exception;
+        public ArrayList<AutoCompletePopover.Entity> getDefaultSuggestions();
     }
 
     boolean muteHashWatcher;
