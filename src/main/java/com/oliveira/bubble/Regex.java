@@ -1,9 +1,10 @@
-package com.eyeem.chips;
+package com.oliveira.bubble;
 
 import java.util.regex.*;
 
 public class Regex {
-   private static final String UNICODE_SPACES = "[" +
+
+    private static final String UNICODE_SPACES = "[" +
       "\\u0009-\\u000d" +     //  # White_Space # Cc   [5] <control-0009>..<control-000D>
       "\\u0020" +             // White_Space # Zs       SPACE
       "\\u0085" +             // White_Space # Cc       <control-0085>
@@ -24,6 +25,7 @@ public class Regex {
       "\\u02bb" + // Hawaiian
       "\\u0300-\\u036f" + // Combining diacritics
       "\\u1e00-\\u1eff"; // Latin Extended Additional (mostly for Vietnamese)
+
    private static final String HASHTAG_ALPHA_CHARS = "a-z" + LATIN_ACCENTS_CHARS +
       "\\u0400-\\u04ff\\u0500-\\u0527" +  // Cyrillic
       "\\u2de0-\\u2dff\\ua640-\\ua69f" +  // Cyrillic Extended A/B
@@ -45,6 +47,7 @@ public class Regex {
       "\\uff21-\\uff3a\\uff41-\\uff5a" +  // full width Alphabet
       "\\uff66-\\uff9f" +                 // half width Katakana
       "\\uffa1-\\uffdc";                  // half width Hangul (Korean)
+
    private static final String HASHTAG_ALPHA_NUMERIC_CHARS = "0-9\\uff10-\\uff19_" + HASHTAG_ALPHA_CHARS;
    private static final String HASHTAG_ALPHA = "[" + HASHTAG_ALPHA_CHARS + "]";
    private static final String HASHTAG_ALPHA_NUMERIC = "[" + HASHTAG_ALPHA_NUMERIC_CHARS + "]";
@@ -55,12 +58,14 @@ public class Regex {
    private static final String URL_VALID_CHARS = "[\\p{Alnum}" + LATIN_ACCENTS_CHARS + "]";
    private static final String URL_VALID_SUBDOMAIN = "(?:(?:" + URL_VALID_CHARS + "[" + URL_VALID_CHARS + "\\-_]*)?" + URL_VALID_CHARS + "\\.)";
    private static final String URL_VALID_DOMAIN_NAME = "(?:(?:" + URL_VALID_CHARS + "[" + URL_VALID_CHARS + "\\-]*)?" + URL_VALID_CHARS + "\\.)";
+
    /* Any non-space, non-punctuation characters. \p{Z} = any kind of whitespace or invisible separator. */
    private static final String URL_VALID_UNICODE_CHARS = "[.[^\\p{Punct}\\s\\p{Z}\\p{InGeneralPunctuation}]]";
 
    private static final String URL_VALID_GTLD =
       "(?:(?:aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|name|net|org|pro|tel|travel|xxx)(?=\\P{Alnum}|$))";
-   private static final String URL_VALID_CCTLD =
+
+    private static final String URL_VALID_CCTLD =
       "(?:(?:ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|" +
          "bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|" +
          "er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|" +
@@ -69,7 +74,8 @@ public class Regex {
          "nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|" +
          "sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|" +
          "va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|za|zm|zw)(?=\\P{Alnum}|$))";
-   private static final String URL_PUNYCODE = "(?:xn--[0-9a-z]+)";
+
+    private static final String URL_PUNYCODE = "(?:xn--[0-9a-z]+)";
 
    private static final String URL_VALID_DOMAIN =
       "(?:" +                                                   // subdomains + domain + TLD
@@ -138,7 +144,7 @@ public class Regex {
    private static final String DOLLAR_SIGN_CHAR = "\\$";
    private static final String CASHTAG = "[a-z]{1,6}(?:[._][a-z]{1,2})?";
 
-  /* Begin public constants */
+   /* Begin public constants */
 
    public static final Pattern VALID_HASHTAG = Pattern.compile("(^|[^&" + HASHTAG_ALPHA_NUMERIC_CHARS + "])(#|\uFF03)(" + HASHTAG_ALPHA_NUMERIC + "*" + HASHTAG_ALPHA + HASHTAG_ALPHA_NUMERIC + "*)", Pattern.CASE_INSENSITIVE);
    public static final int VALID_HASHTAG_GROUP_BEFORE = 1;

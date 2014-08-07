@@ -1,4 +1,4 @@
-package com.eyeem.chips;
+package com.oliveira.bubble;
 
 import android.text.Editable;
 import android.text.Spannable;
@@ -78,7 +78,7 @@ public class Utils {
    }
 
    public static void tapify(Editable editable, int start, int end, int activeColor, int inactiveColor, Object data) {
-      BubbleSpan span = new TapableSpan(activeColor, inactiveColor);
+      BubbleSpan span = new TappableSpan(activeColor, inactiveColor);
       span.setData(data);
       editable.setSpan(span, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       span.setPressed(false, editable);
