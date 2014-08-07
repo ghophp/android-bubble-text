@@ -18,13 +18,16 @@ public class ChipsEditText extends MultilineEditText {
 
     private ArrayList<String> availableItems = new ArrayList<String>();
     private ArrayList<String> filteredItems = new ArrayList<String>();
-    private EditAction lastEditAction;
     private AutoCompletePopover popover;
     private AutoCompleteManager manager;
-    public CharSequence savedHint;
+    private BubbleStyle currentStyle;
+    private String triggerChar = "#";
 
     private boolean autoShow;
     private int maxBubbleCount = -1;
+
+    public CharSequence savedHint;
+    protected EditAction lastEditAction;
 
     public ChipsEditText(Context context) {
         super(context);
@@ -97,6 +100,14 @@ public class ChipsEditText extends MultilineEditText {
         }
     };
 
+    public BubbleStyle getCurrentStyle() {
+        return currentStyle;
+    }
+
+    public void setCurrentStyle(BubbleStyle currentStyle) {
+        this.currentStyle = currentStyle;
+    }
+
     boolean cursorBlink;
     CursorDrawable cursorDrawable;
 
@@ -129,6 +140,14 @@ public class ChipsEditText extends MultilineEditText {
     public void resetAutocompleList() {
         lastEditAction = null;
         manager.search("");
+    }
+
+    public String getTriggerChar() {
+        return triggerChar;
+    }
+
+    public void setTriggerChar(String triggerChar) {
+        this.triggerChar = triggerChar;
     }
 
     public void setAutocomplePopover(AutoCompletePopover popover) {
@@ -172,12 +191,17 @@ public class ChipsEditText extends MultilineEditText {
                 TypedValue.COMPLEX_UNIT_DIP, 1,
                 getContext().getResources().getDisplayMetrics()));
 
+        BubbleStyle bubbleStyle = DefaultBubbles.get(DefaultBubbles.GREEN, getContext(), textSize);
+        if (currentStyle != null) {
+            bubbleStyle = currentStyle;
+        }
+
         Utils.bubblify(getText(),
                 finalText,
                 start,
                 end,
                 maxWidth,
-                DefaultBubbles.get(DefaultBubbles.GREEN, getContext(), textSize),
+                bubbleStyle,
                 this,
                 null);
 
@@ -338,7 +362,7 @@ public class ChipsEditText extends MultilineEditText {
         ArrayList<String> availableItems = new ArrayList<String>();
         if (this.availableItems != null) {
             for (String item : this.availableItems)
-                availableItems.add(item.trim().toLowerCase());
+                availableItems.add(item.trim());
         }
 
         if (availableItems.size() > 0) {
@@ -348,7 +372,7 @@ public class ChipsEditText extends MultilineEditText {
                 int end = getText().getSpanEnd(span);
                 if (start == -1 || end == -1 || end <= start || (manualStart == start && manualModeOn))
                     continue;
-                String text = getText().subSequence(start, end).toString().trim().toLowerCase();
+                String text = getText().subSequence(start, end).toString().trim();
                 availableItems.remove(text);
             }
         }
@@ -471,7 +495,7 @@ public class ChipsEditText extends MultilineEditText {
     }
 
     boolean muteHashWatcher;
-    private void muteHashWatcher(boolean value) {
+    protected void muteHashWatcher(boolean value) {
         muteHashWatcher = value;
     }
 
@@ -497,8 +521,8 @@ public class ChipsEditText extends MultilineEditText {
         public void afterTextChanged(Editable s) {
             if (muteHashWatcher)
                 return;
-            if (after.length() > before.length() && after.lastIndexOf('#') > before.lastIndexOf('#')) {
-                int lastIndex = after.lastIndexOf('#');
+            if (after.length() > before.length() && after.lastIndexOf(triggerChar) > before.lastIndexOf(triggerChar)) {
+                int lastIndex = after.lastIndexOf(triggerChar);
                 if (manualModeOn || canAddMoreBubbles())
                     s.delete(lastIndex, lastIndex + 1);
                 if (!manualModeOn) {

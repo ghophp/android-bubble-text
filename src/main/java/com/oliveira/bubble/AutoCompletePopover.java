@@ -2,6 +2,7 @@ package com.oliveira.bubble;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -25,27 +26,56 @@ public class AutoCompletePopover extends RelativeLayout {
     private Adapter adapter;
     private ScrollView scrollView;
     private InputMethodManager imm;
-    private int bgColor = 0xFF000000;
+
+    private int bgColor;
     private Paint bgPaint;
 
     public AutoCompletePopover(Context context) {
         super(context);
-        init();
+        init(R.layout.autocomplete_popover, R.layout.autocomplete_row);
     }
 
     public AutoCompletePopover(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+
+        TypedArray styledAttributes = context.obtainStyledAttributes(
+                attrs,
+                R.styleable.AutoCompletePopover);
+
+        startWithAttributes(styledAttributes);
     }
 
     public AutoCompletePopover(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
+
+        TypedArray styledAttributes = context.obtainStyledAttributes(
+                attrs,
+                R.styleable.AutoCompletePopover);
+
+        startWithAttributes(styledAttributes);
     }
 
-    void init() {
+    private void startWithAttributes(TypedArray styledAttributes) {
 
-        LayoutInflater.from(getContext()).inflate(R.layout.autocomplete_popover, this, true);
+        int viewId = styledAttributes.getResourceId(
+                R.styleable.AutoCompletePopover_view,
+                R.layout.autocomplete_popover);
+
+        int rowId = styledAttributes.getResourceId(
+                R.styleable.AutoCompletePopover_row,
+                R.layout.autocomplete_row);
+
+        bgColor = styledAttributes.getResourceId(
+                R.styleable.AutoCompletePopover_color,
+                android.R.color.darker_gray);
+
+        styledAttributes.recycle();
+        init(viewId, rowId);
+    }
+
+    void init(int viewId, int rowId) {
+
+        LayoutInflater.from(getContext()).inflate(viewId, this, true);
         scrollView = (ScrollView)findViewById(R.id.suggestions);
 
         ViewGroup vg;
@@ -59,7 +89,7 @@ public class AutoCompletePopover extends RelativeLayout {
 
         scrollView.addView(vg, -2, -2);
 
-        adapter = new Adapter(vg);
+        adapter = new Adapter(vg, rowId);
         adapter.onItemClickListener = onItemClickListener;
         setVisibility(View.GONE);
 
@@ -74,9 +104,10 @@ public class AutoCompletePopover extends RelativeLayout {
         findViewById(R.id.x_border).setOnClickListener(x);
 
         imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
         bgPaint = new Paint();
         bgPaint.setAntiAlias(true);
-        bgPaint.setColor(bgColor);
+        bgPaint.setColor(getResources().getColor(bgColor));
         bgPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
@@ -143,12 +174,14 @@ public class AutoCompletePopover extends RelativeLayout {
 
     public static class Adapter extends BaseAdapter {
 
-        ArrayList<String> items = new ArrayList<String>();
-        LayoutInflater li;
-        ViewGroup vg;
+        private ArrayList<String> items = new ArrayList<String>();
+        private LayoutInflater li;
+        private ViewGroup vg;
+        private int rowId;
 
-        public Adapter(ViewGroup vg) {
+        public Adapter(ViewGroup vg, int rowId) {
             this.vg = vg;
+            this.rowId = rowId;
         }
 
         public void setItems(ArrayList<String> items) {
@@ -175,7 +208,7 @@ public class AutoCompletePopover extends RelativeLayout {
             ViewHolder h;
             if (c == null) {
                 h = new ViewHolder();
-                c = li.inflate(R.layout.autocomplete_row, null);
+                c = li.inflate(rowId, null);
                 h.title = (TextView)c.findViewById(R.id.title);
                 c.setTag(h);
             } else {

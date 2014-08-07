@@ -4,4 +4,9 @@
         <attr name="android:verticalSpacing" />
         <attr name="android:horizontalSpacing" />
     </declare-styleable>
+    <declare-styleable name="AutoCompletePopover">
+        <attr name="view" format="reference" />
+        <attr name="row" format="reference" />
+        <attr name="color" format="reference" />
+    </declare-styleable>
 </resources>

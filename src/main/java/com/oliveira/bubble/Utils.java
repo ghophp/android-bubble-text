@@ -53,8 +53,14 @@ public class Utils {
       public String out(String in);
    }
 
-   public static void bubblify(Editable editable, String text, int start, int end,
-                               int maxWidth, BubbleStyle bubbleStyle, ChipsEditText et, Object data) {
+   public static void bubblify(Editable editable,
+                               String text,
+                               int start,
+                               int end,
+                               int maxWidth,
+                               BubbleStyle bubbleStyle,
+                               ChipsEditText et,
+                               Object data) {
       if (text == null) {
          text = editable.toString();
          if (start < 0)
@@ -64,14 +70,14 @@ public class Utils {
          text = text.substring(start, end);
       }
 
-      // create bitmap drawable for ReplacementSpan
       TextPaint tp = new TextPaint();
       AwesomeBubble bubble = new AwesomeBubble(text, maxWidth, bubbleStyle, tp);
 
-      // create and set ReplacementSpan
       ReplacementSpan[] spansToClear = editable.getSpans(start, end, ReplacementSpan.class);
-      for (ReplacementSpan span : spansToClear)
-         editable.removeSpan(span);
+      for (ReplacementSpan span : spansToClear) {
+          editable.removeSpan(span);
+      }
+
       BubbleSpan span = et == null ? new BubbleSpanImpl(bubble) : new BubbleSpanImpl(bubble, et);
       span.setData(data);
       editable.setSpan(span, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
