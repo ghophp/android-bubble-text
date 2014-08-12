@@ -3,7 +3,7 @@ android-bubble-text
 
 bubble, token, chips edittext, based on chips-android from eyeem, but with tweaks
 
-[![](http://cdn.eyeem.com/thumb/h/400/f88f4ba735e60e5b6faa24b252d1c1b62e375f72-1384269072)] [![](http://cdn.eyeem.com/thumb/h/400/8c660660033aac40d3d099fbc220e993c57ed7eb-1384269111)]
+![](/screenshot/sample1.png?raw=true "Opened Popover") ![](/screenshot/sample2.png?raw=true "Two Bubbles and Popover")
 
 Usage
 ============
@@ -15,24 +15,7 @@ There are two main widgets which you can use:
 Including in your project
 =========================
 
-You can either check out the repo manually or grab a snapshot `aar` which is hosted on sonatype repo. To do so, include this in your build.gradle file:
-
-```
-dependencies {
-
-    repositories {
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
-        mavenCentral()
-        mavenLocal()
-    }
-
-    compile 'com.eyeem.chips:library:0.9.0-SNAPSHOT@aar'
-
-    // ...other dependencies
-}
-```
+I still doesn't upload to sonatype and made it gradle-responsible dependencie, so, by now, just clone into a libraries folder and add as a dependencie manually from Android Studio or Eclipse.
 
 Developers and Refactors By
 ============
