@@ -18,7 +18,7 @@ signing {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "19.1.0"
 
     defaultConfig {
         minSdkVersion 8
@@ -27,8 +27,6 @@ android {
 
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
 }
@@ -39,51 +37,10 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
 
 dependencies {
 
-}
-
-uploadArchives {
-    configuration = configurations.archives
-    repositories.mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-        repository(url: sonatypeRepo) {
-            authentication(userName: sonatypeUsername,
-                    password: sonatypePassword)
-        }
-
-        pom.project {
-            name 'Android Bubble Text Library'
-            packaging 'aar'
-            description 'Bubble Text library for Android applications'
-            url 'https://github.com/ghophp/android-bubble-text'
-
-            scm {
-                url 'scm:git@github.com:ghophp/android-bubble-text.git'
-                connection 'scm:git@github.com:ghophp/android-bubble-text.git'
-                developerConnection 'scm:git@github.com:ghophp/android-bubble-text.git'
-            }
-
-            licenses {
-                license {
-                    name 'MIT'
-                    url 'http://opensource.org/licenses/MIT'
-                    distribution 'repo'
-                }
-            }
-
-            developers {
-                developer {
-                    id 'holiveira'
-                    name 'Guilherme Henrique de Oliveira'
-                    email 'ghophp@gmail.com'
-                }
-            }
-        }
-    }
 }
